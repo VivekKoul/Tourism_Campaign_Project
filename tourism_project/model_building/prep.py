@@ -32,21 +32,6 @@ df['MaritalStatus'] = df['MaritalStatus'].replace({
     'Divorced': 'Divorced',
     'Unmarried':'Single'
 })
-# Encode categorical columns
-# label_encoder = LabelEncoder()
-# df['TypeofContact'] = label_encoder.fit_transform(df['TypeofContact'])
-# df['Occupation'] = label_encoder.fit_transform(df['Occupation'])
-# df['Gender'] = label_encoder.fit_transform(df['Gender'])
-# df['ProductPitched'] = label_encoder.fit_transform(df['ProductPitched'])
-# df['MaritalStatus'] = label_encoder.fit_transform(df['MaritalStatus'])
-# df['Designation'] = label_encoder.fit_transform(df['Designation'])
-# categorical_cols = [
-#     'TypeofContact', 'Occupation', 'Gender',
-#     'ProductPitched', 'MaritalStatus', 'Designation'
-# ]
-# for col in categorical_cols:
-#     le = LabelEncoder()
-#     df[col] = le.fit_transform(df[col])
 
 # Define target variable
 target_col = 'ProdTaken'

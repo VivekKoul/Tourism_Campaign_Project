@@ -71,4 +71,4 @@ input_data = pd.DataFrame ([{
 if st.button("Predict Campaign Success"):
     prediction = model.predict(input_data)[0]
     st.subheader("Prediction Result:")
-    st.success(f"Probability of Purachasing the package: {prediction:,.2f}")
+    st.success(f"Probability/Likelihood of Purchasing the package: {abs(prediction)*100:,.2f} %")
