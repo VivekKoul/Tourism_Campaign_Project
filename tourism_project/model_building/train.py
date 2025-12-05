@@ -31,9 +31,13 @@ ytest_path = "hf://datasets/KoulVivek/tourism_project/ytest.csv"
 # Load data
 Xtrain = pd.read_csv(Xtrain_path)
 Xtest = pd.read_csv(Xtest_path)
-ytrain = pd.read_csv(ytrain_path).squeeze().astype(int)
-ytest = pd.read_csv(ytest_path).squeeze().astype(int)
+ytrain = pd.read_csv(ytrain_path)
+ytest = pd.read_csv(ytest_path)
 
+#Target feature
+target_col = 'ProdTaken'
+ytrain = ytrain[target_col]
+ytest = ytest[target_col]
 # Features
 numeric_features = [
     'Age', 'CityTier', 'DurationOfPitch',
