@@ -6,7 +6,7 @@ from sklearn.pipeline import make_pipeline
 # for model training, tuning, and evaluation
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score,make_scorer,f1_score
 from sklearn.metrics import accuracy_score, classification_report, recall_score # Importing for Metrics of the model
 
 # for model serialization
@@ -33,7 +33,12 @@ Xtrain = pd.read_csv(Xtrain_path)
 Xtest = pd.read_csv(Xtest_path)
 ytrain = pd.read_csv(ytrain_path)
 ytest = pd.read_csv(ytest_path)
-
+# Convert ytrain/ytest to 1D Series
+ytrain = ytrain.squeeze()
+ytest = ytest.squeeze()
+# ensure target is binary integer
+ytrain = ytrain.astype(int)
+ytest = ytest.astype(int)
 #Target feature
 target = 'ProdTaken'
 
@@ -55,27 +60,28 @@ preprocessor = make_column_transformer(
 )
 
 # Setting the class weight to handle class imbalance
-class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
-
+# compute class weight correctly
+neg, pos = ytrain.value_counts()
+class_weight = neg / pos
+print("scale_pos_weight =", class_weight)
 # Define base XGBoost Classifier for classification task
 xgb_model = xgb.XGBClassifier(random_state=42, n_jobs=-1, scale_pos_weight=class_weight)
 
 # Hyperparameter grid
 param_grid = {
-    'xgbclassifier__n_estimators': [50, 75, 100, 125, 150],    # number of tree to build
-    'xgbclassifier__max_depth': [2, 3, 4],    # maximum depth of each tree
-    'xgbclassifier__colsample_bytree': [0.4, 0.5, 0.6],    # percentage of attributes to be considered (randomly) for each tree
-    'xgbclassifier__colsample_bylevel': [0.4, 0.5, 0.6],    # percentage of attributes to be considered (randomly) for each level of a tree
-    'xgbclassifier__learning_rate': [0.01, 0.05, 0.1],    # learning rate
-    'xgbclassifier__reg_lambda': [0.4, 0.5, 0.6],    # L2 regularization factor
-}
+    "xgbclassifier__n_estimators": [75, 100, 150],
+    "xgbclassifier__max_depth": [3, 4],
+    "xgbclassifier__learning_rate": [0.01, 0.05, 0.1],
+    "xgbclassifier__colsample_bytree": [0.5, 0.6],
+    "xgbclassifier__colsample_bylevel": [0.5, 0.6],
+    }
 
 # Pipeline
 model_pipeline = make_pipeline(preprocessor, xgb_model)
 
 with mlflow.start_run():
     # Grid Search
-    grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, n_jobs=-1, scoring='accuracy')
+    grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, n_jobs=-1, scoring=make_scorer(f1_score))
     grid_search.fit(Xtrain, ytrain)
 
     # Log parameter sets
@@ -119,70 +125,6 @@ with mlflow.start_run():
         "test_f1-score": test_report['1']['f1-score']
     })
 
-# # Preprocessor
-# preprocessor = make_column_transformer(
-#     (StandardScaler(), numeric_features),
-#     (OneHotEncoder(handle_unknown='ignore'), categorical_features)
-# )
-
-# # Define base XGBoost Regressor
-# xgb_model = xgb.XGBRegressor(random_state=42, n_jobs=-1)
-
-# # Hyperparameter grid
-# param_grid = {
-#     'xgbregressor__n_estimators': [50, 100, 150],
-#     'xgbregressor__max_depth': [3, 5, 7],
-#     'xgbregressor__learning_rate': [0.01, 0.05, 0.1],
-#     'xgbregressor__subsample': [0.7, 0.8, 1.0],
-#     'xgbregressor__colsample_bytree': [0.7, 0.8, 1.0],
-#     'xgbregressor__reg_lambda': [0.1, 1, 10]
-# }
-
-# # Pipeline
-# model_pipeline = make_pipeline(preprocessor, xgb_model)
-
-# with mlflow.start_run():
-#     # Grid Search
-#     grid_search = GridSearchCV(model_pipeline, param_grid, cv=3, n_jobs=-1, scoring='neg_mean_squared_error')
-#     grid_search.fit(Xtrain, ytrain)
-
-#     # Log parameter sets
-#     results = grid_search.cv_results_
-#     for i in range(len(results['params'])):
-#         param_set = results['params'][i]
-#         mean_score = results['mean_test_score'][i]
-
-#         with mlflow.start_run(nested=True):
-#             mlflow.log_params(param_set)
-#             mlflow.log_metric("mean_neg_mse", mean_score)
-
-#     # Best model
-#     mlflow.log_params(grid_search.best_params_)
-#     best_model = grid_search.best_estimator_
-
-#     # Predictions
-#     y_pred_train = best_model.predict(Xtrain)
-#     y_pred_test = best_model.predict(Xtest)
-
-#     # Metrics
-#     train_rmse = mean_squared_error(ytrain, y_pred_train, squared=False)
-#     test_rmse = mean_squared_error(ytest, y_pred_test, squared=False)
-
-#     train_mae = mean_absolute_error(ytrain, y_pred_train)
-#     test_mae = mean_absolute_error(ytest, y_pred_test)
-
-#     train_r2 = r2_score(ytrain, y_pred_train)
-#     test_r2 = r2_score(ytest, y_pred_test)
-
-#     # Log metrics
-#     mlflow.log_metrics({
-#         "train_RMSE": train_rmse,
-#         "test_RMSE": test_rmse,
-#         "train_MAE": train_mae,
-#         "test_MAE": test_mae,
-#         "train_R2": train_r2,
-#         "test_R2": test_r2
-#     })
 
     # Save the model locally
     model_path = "tourism_project_model_v2.joblib"
