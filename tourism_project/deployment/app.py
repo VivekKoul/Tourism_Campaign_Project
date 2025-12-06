@@ -67,8 +67,14 @@ input_data = pd.DataFrame ([{
 'Designation' :designation
 }])
 
-# Predict button
 if st.button("Predict Campaign Success"):
-    prediction = model.predict(input_data)[0]
+    # Get probability of class 1
+    proba = model.predict_proba(input_data)[0][1]
+
+    # Apply your threshold of 0.45
+    prediction = 1 if proba >= 0.45 else 0
+
     st.subheader("Prediction Result:")
-    st.success(f"Probability/Likelihood of Purchasing the package: {abs(prediction)*100:,.2f} %")
+
+    st.write(f"Predicted Class: **{prediction}**")
+    st.write(f"Purchase Probability: **{proba*100:.2f}%**")
