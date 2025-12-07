@@ -22,16 +22,16 @@ productpitched = st.selectbox("ProductPitched",['Deluxe', 'Basic', 'Standard', '
 maritalstatus = st.selectbox("MaritalStatus", ['Single', 'Divorced', 'Married'])
 designation = st.selectbox("Designation", ['Manager', 'Executive', 'Senior Manager', 'AVP', 'VP'])
 
-age = st.number_input("Age in Yrs)", min_value=1.0, max_value=100.0, value=18.0)
-city_tier = st.number_input("Tier)", min_value=1, max_value=3, value=1)
+age = st.number_input("Age in Yrs", min_value=1.0, max_value=100.0, value=18.0)
+city_tier = st.number_input("Tier", min_value=1, max_value=3, value=1)
 pitch_duration = st.number_input("Duration Of Pitch", min_value=2, max_value=130, value=5)
 no_of_person_visiting = st.number_input("Number Of Person Visiting", min_value=1, max_value=5, value=1)
 no_of_follow_ups = st.number_input("Number Of Follow ups", min_value=1, max_value=6, value=1)
 preferred_property_star = st.number_input("Preferred Property Star", min_value=3, max_value=5, value=3)
 no_of_trips = st.number_input("Number Of Trips", min_value=1, max_value=22, value=1)
-passport_holder = st.number_input("Passport", min_value=0, max_value=1, value=0)
+passport_holder = st.selectbox("Passport", ["Yes", "No"])
 pitch_satisfaction = st.number_input("Pitch Satisfaction Score", min_value=1, max_value=5, value=1)
-car_owner = st.number_input("Own Car", min_value=0, max_value=1, value=0)
+car_owner = st.selectbox("Car_owner", ["Yes", "No"])
 no_of_childrn_visiting = st.number_input("Number Of Children Visiting", min_value=0, max_value=5, value=0)
 MonthlyIncome = st.number_input("Monthly Income", min_value=1000, max_value=100000, value=1000)
 
@@ -54,9 +54,9 @@ input_data = pd.DataFrame ([{
 'NumberOfFollowups':no_of_follow_ups,
 'PreferredPropertyStar':preferred_property_star,
  'NumberOfTrips':no_of_trips,
-'Passport':passport_holder,
+"Passport": 1 if passport_holder == "Yes" else 0,
 'PitchSatisfactionScore':pitch_satisfaction,
-'OwnCar':car_owner,
+'OwnCar':: 1 if car_owner == "Yes" else 0,,
 'NumberOfChildrenVisiting':no_of_childrn_visiting,
 'MonthlyIncome':MonthlyIncome,
 'TypeofContact':contact_type,
