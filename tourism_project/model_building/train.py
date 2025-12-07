@@ -34,7 +34,6 @@ categorical_features = [
 for col in categorical_features:
     Xtrain[col] = Xtrain[col].astype(str)
     Xtest[col] = Xtest[col].astype(str)
-
 # Class imbalance handling
 class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
 
