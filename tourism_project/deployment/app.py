@@ -56,7 +56,7 @@ input_data = pd.DataFrame ([{
  'NumberOfTrips':no_of_trips,
 "Passport": 1 if passport_holder == "Yes" else 0,
 'PitchSatisfactionScore':pitch_satisfaction,
-'OwnCar':: 1 if car_owner == "Yes" else 0,,
+'OwnCar': 1 if car_owner == "Yes" else 0,
 'NumberOfChildrenVisiting':no_of_childrn_visiting,
 'MonthlyIncome':MonthlyIncome,
 'TypeofContact':contact_type,
