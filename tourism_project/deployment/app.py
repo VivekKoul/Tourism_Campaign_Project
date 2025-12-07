@@ -76,5 +76,7 @@ if st.button("Predict Campaign Success"):
 
     st.subheader("Prediction Result:")
 
-    st.write(f"Predicted Class: **{prediction}**")
-    st.write(f"Purchase Probability: **{proba*100:.2f}%**")
+    if prediction == 1:
+        st.success(f"Customer is **LIKELY** to purchase the package (Probability: {proba:.2f})")
+    else:
+        st.error(f"Customer is **NOT likely** to purchase the package (Probability: {proba:.2f})")
